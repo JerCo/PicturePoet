@@ -69,7 +69,7 @@ export default function PicturePoetApp() {
     if (uploadedImage && !imageKeywords && !isLoadingKeywords) {
       handleAnalyzePhoto();
     }
-  }, [uploadedImage, imageKeywords, isLoadingKeywords]); // Added missing dependencies
+  }, [uploadedImage, imageKeywords, isLoadingKeywords]);
 
   const handleAnalyzePhoto = async () => {
     if (!uploadedImage) return;
@@ -156,15 +156,25 @@ export default function PicturePoetApp() {
       return;
     }
 
+    const shareData: ShareData = {
+      title: 'Picture Poet Creation',
+      text: generatedPoem,
+    };
+
+    if (imageFile) {
+      // The File object 'imageFile' has the correct MIME type.
+      // Most modern browsers/OS can handle common image types for sharing.
+      shareData.files = [imageFile];
+    }
+
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: 'Picture Poet Poem',
-          text: generatedPoem,
-        });
+        await navigator.share(shareData);
         toast({
-          title: "Poem Shared",
-          description: "Your poem has been shared successfully.",
+          title: "Content Prepared",
+          description: shareData.files
+            ? "Your poem and image are ready to be shared."
+            : "Your poem is ready to be shared.",
         });
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') {
@@ -173,11 +183,15 @@ export default function PicturePoetApp() {
             description: "You cancelled the share action.",
           });
         } else {
-          console.error("Error sharing poem:", err);
+          console.error("Error sharing content:", err);
+          let errorDescription = "Could not share the content. Your browser might not support this feature, the file type, or an error occurred.";
+          if (!shareData.files) { // If only text was attempted
+             errorDescription = "Could not share the poem. Your browser might not support this feature or an error occurred.";
+          }
           toast({
             variant: "destructive",
             title: "Sharing Failed",
-            description: "Could not share the poem. Your browser might not support this feature or an error occurred.",
+            description: errorDescription,
           });
         }
       }
@@ -185,9 +199,13 @@ export default function PicturePoetApp() {
       // Fallback for browsers that don't support navigator.share
       try {
           await navigator.clipboard.writeText(generatedPoem);
+          let description = "Poem copied to clipboard. Sharing is not supported by your browser.";
+          if(imageFile) {
+            description = "Poem copied to clipboard. Image sharing via clipboard is not directly supported in this way."
+          }
           toast({
               title: "Poem Copied",
-              description: "Poem copied to clipboard as sharing is not supported by your browser.",
+              description: description,
           });
       } catch (copyError) {
           console.error("Error copying poem to clipboard:", copyError);
@@ -399,3 +417,9 @@ export default function PicturePoetApp() {
   );
 }
 
+interface ShareData {
+  files?: File[];
+  title?: string;
+  text?: string;
+  url?: string;
+}
