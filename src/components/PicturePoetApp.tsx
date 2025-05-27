@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -12,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { UploadCloud, SlidersHorizontal, Sparkles, Save, Loader2, AlertCircle, ImageIcon, FileText } from 'lucide-react';
+import { UploadCloud, SlidersHorizontal, Sparkles, Save, Loader2, AlertCircle, ImageIcon, FileText, Share2 } from 'lucide-react';
 
 const POEM_LENGTHS = [
   { value: "short", label: "Short" },
@@ -68,7 +69,7 @@ export default function PicturePoetApp() {
     if (uploadedImage && !imageKeywords && !isLoadingKeywords) {
       handleAnalyzePhoto();
     }
-  }, [uploadedImage]);
+  }, [uploadedImage, imageKeywords, isLoadingKeywords]); // Added missing dependencies
 
   const handleAnalyzePhoto = async () => {
     if (!uploadedImage) return;
@@ -144,6 +145,61 @@ export default function PicturePoetApp() {
         toast({ variant: "destructive", title: "Nothing to Save", description: "Please upload a photo and generate a poem first." });
     }
   };
+
+  const handleSharePoem = async () => {
+    if (!generatedPoem) {
+      toast({
+        variant: "destructive",
+        title: "Nothing to Share",
+        description: "Please generate a poem first.",
+      });
+      return;
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Picture Poet Poem',
+          text: generatedPoem,
+        });
+        toast({
+          title: "Poem Shared",
+          description: "Your poem has been shared successfully.",
+        });
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          toast({
+            title: "Sharing Cancelled",
+            description: "You cancelled the share action.",
+          });
+        } else {
+          console.error("Error sharing poem:", err);
+          toast({
+            variant: "destructive",
+            title: "Sharing Failed",
+            description: "Could not share the poem. Your browser might not support this feature or an error occurred.",
+          });
+        }
+      }
+    } else {
+      // Fallback for browsers that don't support navigator.share
+      try {
+          await navigator.clipboard.writeText(generatedPoem);
+          toast({
+              title: "Poem Copied",
+              description: "Poem copied to clipboard as sharing is not supported by your browser.",
+          });
+      } catch (copyError) {
+          console.error("Error copying poem to clipboard:", copyError);
+          toast({
+              variant: "destructive",
+              title: "Copying Failed",
+              description: "Could not copy the poem to clipboard.",
+          });
+      }
+    }
+  };
+
 
   return (
     <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
@@ -322,10 +378,15 @@ export default function PicturePoetApp() {
               )}
             </CardContent>
             {(uploadedImage || generatedPoem) && (
-              <CardFooter>
-                <Button onClick={handleSaveCreation} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Save creation">
+              <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4"> {/* Ensure padding-top for CardFooter */}
+                <Button onClick={handleSaveCreation} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Save creation">
                   <Save className="mr-2 h-5 w-5" /> Save Creation
                 </Button>
+                {generatedPoem && (
+                  <Button onClick={handleSharePoem} variant="outline" className="w-full sm:flex-1" aria-label="Share poem">
+                    <Share2 className="mr-2 h-5 w-5" /> Share Poem
+                  </Button>
+                )}
               </CardFooter>
             )}
           </Card>
@@ -337,3 +398,4 @@ export default function PicturePoetApp() {
     </div>
   );
 }
+
