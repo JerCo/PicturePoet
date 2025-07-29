@@ -231,7 +231,7 @@ export default function PicturePoetApp() {
   return (
     <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
       <header className="mb-8 md:mb-12 text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-lora">Picture Poet Studio</h1>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-lora">Picture Poet</h1>
         <p className="text-muted-foreground text-md sm:text-lg mt-2">Transform your photos into beautiful poetry.</p>
       </header>
 
@@ -289,7 +289,7 @@ export default function PicturePoetApp() {
 
                 {/* --- STEP 2: CUSTOMIZE & GENERATE --- */}
                 <div className="space-y-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center gap-3">
                         <div className={`flex-shrink-0 rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg ${uploadedImage && imageKeywords ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>2</div>
                         <h3 className={`text-xl font-semibold ${!uploadedImage || !imageKeywords ? 'text-muted-foreground' : ''}`}>Customize & Generate</h3>
                     </div>
@@ -364,7 +364,7 @@ export default function PicturePoetApp() {
 
                 {/* --- STEP 3: CREATION OUTPUT --- */}
                  <div className="space-y-4">
-                     <div className="flex items-center gap-3">
+                     <div className="flex items-center justify-center gap-3">
                         <div className={`flex-shrink-0 rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg ${generatedPoem ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>3</div>
                         <h3 className={`text-xl font-semibold ${!generatedPoem ? 'text-muted-foreground' : ''}`}>Your Creation</h3>
                     </div>
@@ -445,3 +445,6 @@ interface ShareData {
     
 
 
+
+
+    
