@@ -166,7 +166,7 @@ export default function PicturePoetApp() {
       // Most modern browsers/OS can handle common image types for sharing.
       shareData.files = [imageFile];
     }
-
+    
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share(shareData);
@@ -234,9 +234,8 @@ export default function PicturePoetApp() {
         </Alert>
       )}
 
-      <main className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Upload and Controls */}
-        <div className="space-y-6">
+      <main className="w-full max-w-4xl space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
@@ -345,70 +344,67 @@ export default function PicturePoetApp() {
           )}
         </div>
 
-        {/* Right Column: Display Photo and Poem */}
-        <div className="space-y-6">
-          <Card className="shadow-lg min-h-[300px] lg:min-h-[calc(100%-0px)] flex flex-col"> {/* Adjust min-height as needed */}
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <FileText className="text-primary w-6 h-6" /> {/* Changed from Sparkles for content focus */}
-                Your Creation
-              </CardTitle>
-              <CardDescription>Your uploaded photo and generated poem will appear here.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow space-y-6 flex flex-col">
-              {uploadedImage ? (
-                <div className="mb-4 rounded-lg overflow-hidden border border-border shadow-sm aspect-video relative w-full">
-                  <Image 
-                    src={uploadedImage} 
-                    alt="Uploaded preview" 
-                    layout="fill"
-                    objectFit="contain"
-                    data-ai-hint="user uploaded"
-                   />
+        <Card className="shadow-lg w-full">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <FileText className="text-primary w-6 h-6" />
+              Your Creation
+            </CardTitle>
+            <CardDescription>Your uploaded photo and generated poem will appear here.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {uploadedImage ? (
+              <div className="rounded-lg overflow-hidden border border-border shadow-sm aspect-video relative w-full max-w-md mx-auto">
+                <Image 
+                  src={uploadedImage} 
+                  alt="Uploaded preview" 
+                  layout="fill"
+                  objectFit="contain"
+                  data-ai-hint="user uploaded"
+                 />
+              </div>
+            ) : (
+               <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-6 border border-dashed rounded-lg h-48">
+                  <ImageIcon size={48} className="mb-4 opacity-50" />
+                  <p>Upload a photo to begin your poetic journey.</p>
                 </div>
-              ) : (
-                 <div className="flex-grow flex flex-col items-center justify-center text-center text-muted-foreground p-6 border border-dashed rounded-lg">
-                    <ImageIcon size={48} className="mb-4 opacity-50" />
-                    <p>Upload a photo to begin your poetic journey.</p>
-                  </div>
-              )}
-              
-              {isLoadingPoem && (
-                 <div className="flex-grow flex flex-col items-center justify-center text-muted-foreground p-6">
-                  <Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" />
-                  Generating your poem...
-                </div>
-              )}
-
-              {generatedPoem && !isLoadingPoem && (
-                <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner flex-grow">
-                  <h3 className="font-semibold text-lg mb-2 font-lora text-primary">Generated Poem:</h3>
-                  <p className="font-poem whitespace-pre-wrap text-foreground text-sm md:text-base leading-relaxed">
-                    {generatedPoem}
-                  </p>
-                </div>
-              )}
-
-              {!uploadedImage && !generatedPoem && !isLoadingPoem && (
-                <div className="flex-grow flex flex-col items-center justify-center text-center text-muted-foreground p-6">
-                  {!uploadedImage && <p>Your poem will appear here after generation.</p>}
-                </div>
-              )}
-            </CardContent>
-            {(uploadedImage || generatedPoem) && (
-              <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4"> {/* Ensure padding-top for CardFooter */}
-                <Button onClick={handleSaveCreation} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Save creation">
-                  <Save className="mr-2 h-5 w-5" /> Save Creation
-                </Button>
-                {generatedPoem && (
-                  <Button onClick={handleSharePoem} variant="outline" className="w-full sm:flex-1" aria-label="Share poem">
-                    <Share2 className="mr-2 h-5 w-5" /> Share Poem
-                  </Button>
-                )}
-              </CardFooter>
             )}
-          </Card>
-        </div>
+            
+            {isLoadingPoem && (
+               <div className="flex flex-col items-center justify-center text-muted-foreground p-6">
+                <Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" />
+                <p>Generating your poem...</p>
+              </div>
+            )}
+
+            {generatedPoem && !isLoadingPoem && (
+              <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner">
+                <h3 className="font-semibold text-lg mb-2 font-lora text-primary">Generated Poem:</h3>
+                <p className="font-poem whitespace-pre-wrap text-foreground text-sm md:text-base leading-relaxed">
+                  {generatedPoem}
+                </p>
+              </div>
+            )}
+
+            {!uploadedImage && !generatedPoem && !isLoadingPoem && (
+              <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-6">
+                <p>Your poem will appear here after generation.</p>
+              </div>
+            )}
+          </CardContent>
+          {(uploadedImage || generatedPoem) && (
+            <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4">
+              <Button onClick={handleSaveCreation} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Save creation">
+                <Save className="mr-2 h-5 w-5" /> Save Creation
+              </Button>
+              {generatedPoem && (
+                <Button onClick={handleSharePoem} variant="outline" className="w-full sm:flex-1" aria-label="Share poem">
+                  <Share2 className="mr-2 h-5 w-5" /> Share Poem
+                </Button>
+              )}
+            </CardFooter>
+          )}
+        </Card>
       </main>
       <footer className="mt-12 text-center text-sm text-muted-foreground">
         <p>&copy; {new Date().getFullYear()} Picture Poet. All rights reserved.</p>
