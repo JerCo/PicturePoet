@@ -231,7 +231,7 @@ export default function PicturePoetApp() {
   return (
     <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
       <header className="mb-8 md:mb-12 text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-lora">Picture Poet</h1>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-lora">Picture Poet Studio</h1>
         <p className="text-muted-foreground text-md sm:text-lg mt-2">Transform your photos into beautiful poetry.</p>
       </header>
 
@@ -442,5 +442,7 @@ interface ShareData {
   text?: string;
   url?: string;
 }
+
+    
 
     
