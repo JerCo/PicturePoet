@@ -164,7 +164,7 @@ export default function PicturePoetApp() {
     }
 
     const shareData: ShareData = {
-      title: 'Picture Poet Creation',
+      title: 'PicturePoet Creation',
       text: generatedPoem,
     };
 
@@ -232,35 +232,39 @@ export default function PicturePoetApp() {
 
 
   return (
-    <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
-      <header className="w-full max-w-4xl flex flex-col items-center mb-8 md:mb-12">
-        <div className="w-full flex justify-center py-4">
-          <ThemeToggle />
-        </div>
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-primary font-lora text-center">PicturePoet</h1>
+    <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
+      <header className="w-full max-w-4xl flex items-center justify-between mb-8 md:mb-12 self-center">
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-primary font-lora">PicturePoet</h1>
+        <ThemeToggle />
       </header>
       
       {error && (
-        <Alert variant="destructive" className="mb-8 max-w-3xl w-full">
+        <Alert variant="destructive" className="mb-8 max-w-3xl w-full self-center">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Oops! Something went wrong.</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <main className="w-full max-w-4xl">
+      <main className="w-full max-w-4xl self-center">
         <Card className="shadow-lg w-full">
-            <CardHeader className="text-center">
+            <CardHeader>
                 <CardDescription className="text-xl">Follow the steps below to create your masterpiece.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 {/* --- STEP 1: UPLOAD --- */}
-                <div className="space-y-4 text-center">
-                    <div className="flex items-center justify-center gap-3">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
                         <div className="flex-shrink-0 bg-primary text-primary-foreground rounded-full h-10 w-10 flex items-center justify-center font-bold text-xl">1</div>
                         <h3 className="text-2xl font-semibold">Upload Your Photo</h3>
                     </div>
                      <div>
+                        <Label
+                            htmlFor="photo-upload"
+                            className="w-full max-w-sm cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-lg font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-12 px-6 py-3"
+                        >
+                            <UploadCloud className="mr-2 h-6 w-6" /> Choose Photo
+                        </Label>
                         <Input
                             id="photo-upload"
                             type="file"
@@ -269,20 +273,14 @@ export default function PicturePoetApp() {
                             onChange={handleImageChange}
                             aria-label="Upload photo"
                         />
-                        <Label
-                            htmlFor="photo-upload"
-                            className="w-full max-w-sm cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-lg font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-12 px-6 py-3"
-                        >
-                            <UploadCloud className="mr-2 h-6 w-6" /> Choose Photo
-                        </Label>
                         {isLoadingKeywords && (
-                            <div className="mt-4 flex items-center justify-center text-muted-foreground">
+                            <div className="mt-4 flex items-center text-muted-foreground">
                             <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
                             Analyzing photo for keywords...
                             </div>
                         )}
                         {imageKeywords && !isLoadingKeywords && (
-                            <div className="mt-4 p-3 bg-secondary/50 rounded-md max-w-sm mx-auto">
+                            <div className="mt-4 p-3 bg-secondary/50 rounded-md">
                             <h4 className="font-semibold text-secondary-foreground mb-1">Identified Keywords:</h4>
                             <p className="text-base text-secondary-foreground break-words">{imageKeywords.join(', ')}</p>
                             </div>
@@ -294,7 +292,7 @@ export default function PicturePoetApp() {
 
                 {/* --- STEP 2: CUSTOMIZE & GENERATE --- */}
                 <div className="space-y-4">
-                    <div className="flex items-center justify-center gap-3">
+                    <div className="flex items-center gap-3">
                         <div className={`flex-shrink-0 rounded-full h-10 w-10 flex items-center justify-center font-bold text-xl ${uploadedImage && imageKeywords ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>2</div>
                         <h3 className={`text-2xl font-semibold ${!uploadedImage || !imageKeywords ? 'text-muted-foreground' : ''}`}>Customize & Generate</h3>
                     </div>
@@ -369,7 +367,7 @@ export default function PicturePoetApp() {
 
                 {/* --- STEP 3: CREATION OUTPUT --- */}
                  <div className="space-y-4">
-                     <div className="flex items-center justify-center gap-3">
+                     <div className="flex items-center gap-3">
                         <div className={`flex-shrink-0 rounded-full h-10 w-10 flex items-center justify-center font-bold text-xl ${generatedPoem ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>3</div>
                         <h3 className={`text-2xl font-semibold ${!generatedPoem ? 'text-muted-foreground' : ''}`}>Your Creation</h3>
                     </div>
@@ -385,7 +383,7 @@ export default function PicturePoetApp() {
                             />
                         </div>
                         ) : (
-                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-6 border border-dashed rounded-lg h-48">
+                        <div className="flex flex-col items-start justify-center text-muted-foreground p-6 border border-dashed rounded-lg h-48">
                             <ImageIcon size={48} className="mb-4 opacity-50" />
                             <p>Upload a photo to see it here.</p>
                         </div>
@@ -400,7 +398,7 @@ export default function PicturePoetApp() {
 
                         {generatedPoem && !isLoadingPoem && (
                         <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner">
-                            <h3 className="font-semibold text-xl text-center mb-2 font-lora text-primary">Generated Poem:</h3>
+                            <h3 className="font-semibold text-xl text-left mb-2 font-lora text-primary">Generated Poem:</h3>
                             <p className="font-poem whitespace-pre-wrap text-foreground text-lg md:text-xl leading-relaxed text-left">
                             {generatedPoem}
                             </p>
@@ -408,7 +406,7 @@ export default function PicturePoetApp() {
                         )}
 
                         {!generatedPoem && !isLoadingPoem && (
-                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-6 border border-dashed rounded-lg">
+                        <div className="flex flex-col items-start justify-center text-muted-foreground p-6 border border-dashed rounded-lg">
                             <p>Your poem will appear here after generation.</p>
                         </div>
                         )}
@@ -431,7 +429,7 @@ export default function PicturePoetApp() {
         </Card>
       </main>
 
-      <footer className="mt-12 text-center text-base text-muted-foreground">
+      <footer className="mt-12 w-full max-w-4xl self-center text-base text-muted-foreground">
         <p>&copy; {new Date().getFullYear()} PicturePoet. All rights reserved.</p>
       </footer>
     </div>
@@ -444,5 +442,3 @@ interface ShareData {
   text?: string;
   url?: string;
 }
-
-    
