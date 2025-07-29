@@ -246,19 +246,16 @@ export default function PicturePoetApp() {
       <main className="w-full max-w-4xl">
         <Card className="shadow-lg w-full">
             <CardHeader className="text-center">
-                <CardTitle className="justify-center text-2xl font-lora">
-                    Picture Poet Studio
-                </CardTitle>
-                <CardDescription>Follow the steps below to create your masterpiece.</CardDescription>
+                <CardDescription className="text-lg">Follow the steps below to create your masterpiece.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 {/* --- STEP 1: UPLOAD --- */}
                 <div className="space-y-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center gap-3">
                         <div className="flex-shrink-0 bg-primary text-primary-foreground rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">1</div>
                         <h3 className="text-xl font-semibold">Upload Your Photo</h3>
                     </div>
-                     <div className="pl-11">
+                     <div className="text-center">
                         <Input
                             id="photo-upload"
                             type="file"
@@ -274,13 +271,13 @@ export default function PicturePoetApp() {
                             <UploadCloud className="mr-2 h-5 w-5" /> Choose Photo
                         </Label>
                         {isLoadingKeywords && (
-                            <div className="mt-4 flex items-center text-muted-foreground">
+                            <div className="mt-4 flex items-center justify-center text-muted-foreground">
                             <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
                             Analyzing photo for keywords...
                             </div>
                         )}
                         {imageKeywords && !isLoadingKeywords && (
-                            <div className="mt-4 p-3 bg-secondary/50 rounded-md max-w-sm">
+                            <div className="mt-4 p-3 bg-secondary/50 rounded-md max-w-sm mx-auto">
                             <h4 className="font-semibold text-secondary-foreground mb-1">Identified Keywords:</h4>
                             <p className="text-sm text-secondary-foreground break-words">{imageKeywords.join(', ')}</p>
                             </div>
@@ -446,3 +443,4 @@ interface ShareData {
     
 
     
+
