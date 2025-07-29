@@ -149,9 +149,8 @@ export default function PicturePoetApp() {
 
  const handleSharePoem = async () => {
     if (typeof navigator === 'undefined') {
-        // This case might be relevant for server-side rendering or very old browsers.
-        setError("Sharing is not supported on this device.");
-        return;
+      setError("Sharing is not supported on this device.");
+      return;
     }
 
     if (!generatedPoem) {
@@ -168,8 +167,12 @@ export default function PicturePoetApp() {
       text: generatedPoem,
     };
 
-    // Check if the share API can handle files
-    if (imageFile && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+    let canShareFiles = false;
+    if (typeof navigator.canShare === 'function' && imageFile) {
+        canShareFiles = navigator.canShare({ files: [imageFile] });
+    }
+    
+    if (imageFile && canShareFiles) {
       shareData.files = [imageFile];
     }
     
@@ -191,10 +194,10 @@ export default function PicturePoetApp() {
         } else {
           console.error("Error sharing content:", err);
           let errorDescription = "Could not share the content. Your browser might not support this feature, the file type, or an error occurred.";
-          if (!shareData.files) { // If only text was attempted
+          if (!shareData.files) {
              errorDescription = "Could not share the poem. Your browser might not support this feature or an error occurred.";
           }
-           else if (shareData.files && !(navigator.canShare && navigator.canShare({ files: [imageFile!] }))) {
+           else if (shareData.files && !canShareFiles) {
              errorDescription = "Your browser supports sharing, but not with files. The poem has been prepared for sharing instead.";
           }
           toast({
@@ -205,7 +208,6 @@ export default function PicturePoetApp() {
         }
       }
     } else {
-      // Fallback for browsers that don't support navigator.share
       try {
           await navigator.clipboard.writeText(generatedPoem);
           let description = "Poem copied to clipboard. Sharing is not supported by your browser.";
@@ -250,12 +252,12 @@ export default function PicturePoetApp() {
             </CardHeader>
             <CardContent className="space-y-6">
                 {/* --- STEP 1: UPLOAD --- */}
-                <div className="space-y-4">
+                <div className="space-y-4 text-center">
                     <div className="flex items-center justify-center gap-3">
                         <div className="flex-shrink-0 bg-primary text-primary-foreground rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">1</div>
                         <h3 className="text-xl font-semibold">Upload Your Photo</h3>
                     </div>
-                     <div className="text-center">
+                     <div>
                         <Input
                             id="photo-upload"
                             type="file"
@@ -294,7 +296,7 @@ export default function PicturePoetApp() {
                         <h3 className={`text-xl font-semibold ${!uploadedImage || !imageKeywords ? 'text-muted-foreground' : ''}`}>Customize & Generate</h3>
                     </div>
 
-                    <div className={`pl-11 grid grid-cols-1 md:grid-cols-2 gap-6 ${!uploadedImage || !imageKeywords ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${!uploadedImage || !imageKeywords ? 'opacity-50 pointer-events-none' : ''}`}>
                         <div className="space-y-4">
                              <div>
                                 <Label htmlFor="poem-length">Poem Length</Label>
@@ -368,7 +370,7 @@ export default function PicturePoetApp() {
                         <div className={`flex-shrink-0 rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg ${generatedPoem ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>3</div>
                         <h3 className={`text-xl font-semibold ${!generatedPoem ? 'text-muted-foreground' : ''}`}>Your Creation</h3>
                     </div>
-                    <div className="pl-11 space-y-6">
+                    <div className="space-y-6">
                         {uploadedImage ? (
                         <div className="rounded-lg overflow-hidden border border-border shadow-sm aspect-video relative w-full">
                             <Image 
@@ -439,12 +441,3 @@ interface ShareData {
   text?: string;
   url?: string;
 }
-
-    
-
-    
-
-
-
-
-    
