@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { UploadCloud, SlidersHorizontal, Sparkles, Save, Loader2, AlertCircle, ImageIcon, FileText, Share2 } from 'lucide-react';
 
@@ -146,7 +147,13 @@ export default function PicturePoetApp() {
     }
   };
 
-  const handleSharePoem = async () => {
+ const handleSharePoem = async () => {
+    if (typeof navigator === 'undefined') {
+        // This case might be relevant for server-side rendering or very old browsers.
+        setError("Sharing is not supported on this device.");
+        return;
+    }
+
     if (!generatedPoem) {
       toast({
         variant: "destructive",
@@ -161,13 +168,12 @@ export default function PicturePoetApp() {
       text: generatedPoem,
     };
 
-    if (imageFile) {
-      // The File object 'imageFile' has the correct MIME type.
-      // Most modern browsers/OS can handle common image types for sharing.
+    // Check if the share API can handle files
+    if (imageFile && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
       shareData.files = [imageFile];
     }
     
-    if (typeof navigator !== 'undefined' && navigator.share) {
+    if (navigator.share) {
       try {
         await navigator.share(shareData);
         toast({
@@ -188,6 +194,9 @@ export default function PicturePoetApp() {
           if (!shareData.files) { // If only text was attempted
              errorDescription = "Could not share the poem. Your browser might not support this feature or an error occurred.";
           }
+           else if (shareData.files && !(navigator.canShare && navigator.canShare({ files: [imageFile!] }))) {
+             errorDescription = "Your browser supports sharing, but not with files. The poem has been prepared for sharing instead.";
+          }
           toast({
             variant: "destructive",
             title: "Sharing Failed",
@@ -201,7 +210,7 @@ export default function PicturePoetApp() {
           await navigator.clipboard.writeText(generatedPoem);
           let description = "Poem copied to clipboard. Sharing is not supported by your browser.";
           if(imageFile) {
-            description = "Poem copied to clipboard. Image sharing via clipboard is not directly supported in this way."
+            description = "Poem copied to clipboard. Image sharing via clipboard is not directly supported."
           }
           toast({
               title: "Poem Copied",
@@ -234,178 +243,192 @@ export default function PicturePoetApp() {
         </Alert>
       )}
 
-      <main className="w-full max-w-4xl space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <UploadCloud className="text-primary w-6 h-6" />
-                1. Upload Your Photo
-              </CardTitle>
-              <CardDescription>Select an image file from your device.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Input
-                id="photo-upload"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleImageChange}
-                aria-label="Upload photo"
-              />
-              <Label
-                htmlFor="photo-upload"
-                className="w-full cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-              >
-                <UploadCloud className="mr-2 h-5 w-5" /> Choose Photo
-              </Label>
-              {isLoadingKeywords && (
-                <div className="mt-4 flex items-center text-muted-foreground">
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
-                  Analyzing photo for keywords...
-                </div>
-              )}
-              {imageKeywords && !isLoadingKeywords && (
-                <div className="mt-4 p-3 bg-secondary/50 rounded-md">
-                  <h4 className="font-semibold text-secondary-foreground mb-1">Identified Keywords:</h4>
-                  <p className="text-sm text-secondary-foreground break-words">{imageKeywords.join(', ')}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {uploadedImage && imageKeywords && (
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <SlidersHorizontal className="text-primary w-6 h-6" />
-                  2. Customize Poem Style
-                </CardTitle>
-                <CardDescription>Tailor the generated poem to your liking.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="poem-length">Poem Length</Label>
-                  <Select
-                    value={poemStyle.length}
-                    onValueChange={(value) => setPoemStyle(prev => ({ ...prev, length: value }))}
-                  >
-                    <SelectTrigger id="poem-length" className="w-full">
-                      <SelectValue placeholder="Select length" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {POEM_LENGTHS.map(opt => (
-                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="poem-tone">Poem Tone</Label>
-                  <Select
-                    value={poemStyle.tone}
-                    onValueChange={(value) => setPoemStyle(prev => ({ ...prev, tone: value }))}
-                  >
-                    <SelectTrigger id="poem-tone" className="w-full">
-                      <SelectValue placeholder="Select tone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {POEM_TONES.map(opt => (
-                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="custom-prompt">Additional Context (Optional)</Label>
-                  <Textarea 
-                    id="custom-prompt"
-                    placeholder="e.g., Focus on the sunset, make it rhyme, mention a specific object..."
-                    value={customPrompt}
-                    onChange={(e) => setCustomPrompt(e.target.value)}
-                    className="min-h-[60px]"
-                  />
-                </div>
-                <Button 
-                  onClick={handleGeneratePoem} 
-                  disabled={isLoadingPoem || isLoadingKeywords || !imageKeywords}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                  aria-label="Generate poem"
-                >
-                  {isLoadingPoem ? (
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  ) : (
-                    <Sparkles className="mr-2 h-5 w-5" />
-                  )}
-                  Generate Poem
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
+      <main className="w-full max-w-4xl">
         <Card className="shadow-lg w-full">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <FileText className="text-primary w-6 h-6" />
-              Your Creation
-            </CardTitle>
-            <CardDescription>Your uploaded photo and generated poem will appear here.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {uploadedImage ? (
-              <div className="rounded-lg overflow-hidden border border-border shadow-sm aspect-video relative w-full max-w-md mx-auto">
-                <Image 
-                  src={uploadedImage} 
-                  alt="Uploaded preview" 
-                  layout="fill"
-                  objectFit="contain"
-                  data-ai-hint="user uploaded"
-                 />
-              </div>
-            ) : (
-               <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-6 border border-dashed rounded-lg h-48">
-                  <ImageIcon size={48} className="mb-4 opacity-50" />
-                  <p>Upload a photo to begin your poetic journey.</p>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-2xl font-lora">
+                    Picture Poet Studio
+                </CardTitle>
+                <CardDescription>Follow the steps below to create your masterpiece.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                {/* --- STEP 1: UPLOAD --- */}
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="flex-shrink-0 bg-primary text-primary-foreground rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">1</div>
+                        <h3 className="text-xl font-semibold">Upload Your Photo</h3>
+                    </div>
+                     <div className="pl-11">
+                        <Input
+                            id="photo-upload"
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            aria-label="Upload photo"
+                        />
+                        <Label
+                            htmlFor="photo-upload"
+                            className="w-full max-w-sm cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                        >
+                            <UploadCloud className="mr-2 h-5 w-5" /> Choose Photo
+                        </Label>
+                        {isLoadingKeywords && (
+                            <div className="mt-4 flex items-center text-muted-foreground">
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
+                            Analyzing photo for keywords...
+                            </div>
+                        )}
+                        {imageKeywords && !isLoadingKeywords && (
+                            <div className="mt-4 p-3 bg-secondary/50 rounded-md max-w-sm">
+                            <h4 className="font-semibold text-secondary-foreground mb-1">Identified Keywords:</h4>
+                            <p className="text-sm text-secondary-foreground break-words">{imageKeywords.join(', ')}</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            )}
-            
-            {isLoadingPoem && (
-               <div className="flex flex-col items-center justify-center text-muted-foreground p-6">
-                <Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" />
-                <p>Generating your poem...</p>
-              </div>
-            )}
 
-            {generatedPoem && !isLoadingPoem && (
-              <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner">
-                <h3 className="font-semibold text-lg mb-2 font-lora text-primary">Generated Poem:</h3>
-                <p className="font-poem whitespace-pre-wrap text-foreground text-sm md:text-base leading-relaxed">
-                  {generatedPoem}
-                </p>
-              </div>
-            )}
+                <Separator className="my-6" />
 
-            {!uploadedImage && !generatedPoem && !isLoadingPoem && (
-              <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-6">
-                <p>Your poem will appear here after generation.</p>
-              </div>
-            )}
-          </CardContent>
-          {(uploadedImage || generatedPoem) && (
-            <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4">
-              <Button onClick={handleSaveCreation} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Save creation">
-                <Save className="mr-2 h-5 w-5" /> Save Creation
-              </Button>
-              {generatedPoem && (
-                <Button onClick={handleSharePoem} variant="outline" className="w-full sm:flex-1" aria-label="Share poem">
-                  <Share2 className="mr-2 h-5 w-5" /> Share Poem
+                {/* --- STEP 2: CUSTOMIZE & GENERATE --- */}
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className={`flex-shrink-0 rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg ${uploadedImage && imageKeywords ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>2</div>
+                        <h3 className={`text-xl font-semibold ${!uploadedImage || !imageKeywords ? 'text-muted-foreground' : ''}`}>Customize & Generate</h3>
+                    </div>
+
+                    <div className={`pl-11 grid grid-cols-1 md:grid-cols-2 gap-6 ${!uploadedImage || !imageKeywords ? 'opacity-50 pointer-events-none' : ''}`}>
+                        <div className="space-y-4">
+                             <div>
+                                <Label htmlFor="poem-length">Poem Length</Label>
+                                <Select
+                                    value={poemStyle.length}
+                                    onValueChange={(value) => setPoemStyle(prev => ({ ...prev, length: value }))}
+                                    disabled={!uploadedImage || !imageKeywords}
+                                >
+                                    <SelectTrigger id="poem-length" className="w-full">
+                                    <SelectValue placeholder="Select length" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                    {POEM_LENGTHS.map(opt => (
+                                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <Label htmlFor="poem-tone">Poem Tone</Label>
+                                <Select
+                                    value={poemStyle.tone}
+                                    onValueChange={(value) => setPoemStyle(prev => ({ ...prev, tone: value }))}
+                                    disabled={!uploadedImage || !imageKeywords}
+                                >
+                                    <SelectTrigger id="poem-tone" className="w-full">
+                                    <SelectValue placeholder="Select tone" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                    {POEM_TONES.map(opt => (
+                                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="custom-prompt">Additional Context (Optional)</Label>
+                                <Textarea 
+                                    id="custom-prompt"
+                                    placeholder="e.g., Focus on the sunset, make it rhyme..."
+                                    value={customPrompt}
+                                    onChange={(e) => setCustomPrompt(e.target.value)}
+                                    className="min-h-[60px]"
+                                    disabled={!uploadedImage || !imageKeywords}
+                                />
+                            </div>
+                             <Button 
+                                onClick={handleGeneratePoem} 
+                                disabled={isLoadingPoem || isLoadingKeywords || !imageKeywords}
+                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                                aria-label="Generate poem"
+                            >
+                                {isLoadingPoem ? (
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                ) : (
+                                <Sparkles className="mr-2 h-5 w-5" />
+                                )}
+                                Generate Poem
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                 <Separator className="my-6" />
+
+                {/* --- STEP 3: CREATION OUTPUT --- */}
+                 <div className="space-y-4">
+                     <div className="flex items-center gap-3">
+                        <div className={`flex-shrink-0 rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg ${generatedPoem ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>3</div>
+                        <h3 className={`text-xl font-semibold ${!generatedPoem ? 'text-muted-foreground' : ''}`}>Your Creation</h3>
+                    </div>
+                    <div className="pl-11 space-y-6">
+                        {uploadedImage ? (
+                        <div className="rounded-lg overflow-hidden border border-border shadow-sm aspect-video relative w-full">
+                            <Image 
+                            src={uploadedImage} 
+                            alt="Uploaded preview" 
+                            layout="fill"
+                            objectFit="contain"
+                            data-ai-hint="user uploaded"
+                            />
+                        </div>
+                        ) : (
+                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-6 border border-dashed rounded-lg h-48">
+                            <ImageIcon size={48} className="mb-4 opacity-50" />
+                            <p>Upload a photo to see it here.</p>
+                        </div>
+                        )}
+                        
+                        {isLoadingPoem && (
+                        <div className="flex flex-col items-center justify-center text-muted-foreground p-6">
+                            <Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" />
+                            <p>Generating your poem...</p>
+                        </div>
+                        )}
+
+                        {generatedPoem && !isLoadingPoem && (
+                        <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner">
+                            <h3 className="font-semibold text-lg mb-2 font-lora text-primary">Generated Poem:</h3>
+                            <p className="font-poem whitespace-pre-wrap text-foreground text-sm md:text-base leading-relaxed">
+                            {generatedPoem}
+                            </p>
+                        </div>
+                        )}
+
+                        {!generatedPoem && !isLoadingPoem && (
+                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-6 border border-dashed rounded-lg">
+                            <p>Your poem will appear here after generation.</p>
+                        </div>
+                        )}
+                    </div>
+                </div>
+
+            </CardContent>
+            {(uploadedImage || generatedPoem) && (
+                <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4 bg-muted/50 p-4 mt-6 rounded-b-lg border-t">
+                <Button onClick={handleSaveCreation} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Save creation">
+                    <Save className="mr-2 h-5 w-5" /> Save Creation
                 </Button>
-              )}
-            </CardFooter>
-          )}
+                {generatedPoem && (
+                    <Button onClick={handleSharePoem} variant="outline" className="w-full sm:flex-1" aria-label="Share poem">
+                    <Share2 className="mr-2 h-5 w-5" /> Share Poem
+                    </Button>
+                )}
+                </CardFooter>
+            )}
         </Card>
       </main>
+
       <footer className="mt-12 text-center text-sm text-muted-foreground">
         <p>&copy; {new Date().getFullYear()} Picture Poet. All rights reserved.</p>
       </footer>
@@ -419,3 +442,5 @@ interface ShareData {
   text?: string;
   url?: string;
 }
+
+    
