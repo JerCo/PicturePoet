@@ -233,9 +233,12 @@ export default function PicturePoetApp() {
 
   return (
     <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
-      <header className="w-full max-w-4xl flex justify-between items-center mb-8 md:mb-12">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-lora">Picture Poet</h1>
-        <ThemeToggle />
+      <header className="w-full max-w-4xl grid grid-cols-3 items-center mb-8 md:mb-12">
+        <div />
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-lora text-center col-start-2">Picture Poet</h1>
+        <div className="flex justify-end items-center">
+            <ThemeToggle />
+        </div>
       </header>
       
       {error && (
