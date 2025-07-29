@@ -245,8 +245,8 @@ export default function PicturePoetApp() {
 
       <main className="w-full max-w-4xl">
         <Card className="shadow-lg w-full">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-2xl font-lora">
+            <CardHeader className="text-center">
+                <CardTitle className="justify-center text-2xl font-lora">
                     Picture Poet Studio
                 </CardTitle>
                 <CardDescription>Follow the steps below to create your masterpiece.</CardDescription>
