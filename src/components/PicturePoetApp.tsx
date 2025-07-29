@@ -250,13 +250,13 @@ export default function PicturePoetApp() {
 
       <main className="w-full max-w-4xl self-center">
         <Card className="shadow-lg w-full">
-            <CardHeader>
+            <CardHeader className="text-center">
                 <CardDescription className="text-xl">Follow the steps below to create your masterpiece.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 {/* --- STEP 1: UPLOAD --- */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-3">
+                <div className="space-y-4 text-center">
+                    <div className="flex items-center justify-center gap-3">
                         <div className="flex-shrink-0 bg-primary text-primary-foreground rounded-full h-10 w-10 flex items-center justify-center font-bold text-xl">1</div>
                         <h3 className="text-2xl font-semibold">Upload Your Photo</h3>
                     </div>
@@ -276,13 +276,13 @@ export default function PicturePoetApp() {
                             aria-label="Upload photo"
                         />
                         {isLoadingKeywords && (
-                            <div className="mt-4 flex items-center text-muted-foreground">
+                            <div className="mt-4 flex items-center justify-center text-muted-foreground">
                             <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
                             Analyzing photo for keywords...
                             </div>
                         )}
                         {imageKeywords && !isLoadingKeywords && (
-                            <div className="mt-4 p-3 bg-secondary/50 rounded-md">
+                            <div className="mt-4 p-3 bg-secondary/50 rounded-md text-left">
                             <h4 className="font-semibold text-secondary-foreground mb-1">Identified Keywords:</h4>
                             <p className="text-base text-secondary-foreground break-words">{imageKeywords.join(', ')}</p>
                             </div>
@@ -379,7 +379,7 @@ export default function PicturePoetApp() {
                             <Image 
                             src={uploadedImage} 
                             alt="Uploaded preview" 
-                            layout="fill"
+                            fill
                             objectFit="contain"
                             data-ai-hint="user uploaded"
                             />
