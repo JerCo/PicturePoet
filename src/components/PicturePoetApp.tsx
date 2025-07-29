@@ -233,12 +233,11 @@ export default function PicturePoetApp() {
 
   return (
     <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
-      <header className="w-full max-w-4xl grid grid-cols-3 items-center mb-8 md:mb-12">
-        <div />
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-lora text-center col-start-2">Picture Poet</h1>
-        <div className="flex justify-end items-center">
-            <ThemeToggle />
+      <header className="w-full max-w-4xl flex flex-col items-center mb-8 md:mb-12">
+        <div className="w-full flex justify-center py-4">
+          <ThemeToggle />
         </div>
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-primary font-lora text-center">PicturePoet</h1>
       </header>
       
       {error && (
@@ -252,14 +251,14 @@ export default function PicturePoetApp() {
       <main className="w-full max-w-4xl">
         <Card className="shadow-lg w-full">
             <CardHeader className="text-center">
-                <CardDescription className="text-lg">Follow the steps below to create your masterpiece.</CardDescription>
+                <CardDescription className="text-xl">Follow the steps below to create your masterpiece.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 {/* --- STEP 1: UPLOAD --- */}
                 <div className="space-y-4 text-center">
                     <div className="flex items-center justify-center gap-3">
-                        <div className="flex-shrink-0 bg-primary text-primary-foreground rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">1</div>
-                        <h3 className="text-xl font-semibold">Upload Your Photo</h3>
+                        <div className="flex-shrink-0 bg-primary text-primary-foreground rounded-full h-10 w-10 flex items-center justify-center font-bold text-xl">1</div>
+                        <h3 className="text-2xl font-semibold">Upload Your Photo</h3>
                     </div>
                      <div>
                         <Input
@@ -272,9 +271,9 @@ export default function PicturePoetApp() {
                         />
                         <Label
                             htmlFor="photo-upload"
-                            className="w-full max-w-sm cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                            className="w-full max-w-sm cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-lg font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-12 px-6 py-3"
                         >
-                            <UploadCloud className="mr-2 h-5 w-5" /> Choose Photo
+                            <UploadCloud className="mr-2 h-6 w-6" /> Choose Photo
                         </Label>
                         {isLoadingKeywords && (
                             <div className="mt-4 flex items-center justify-center text-muted-foreground">
@@ -285,7 +284,7 @@ export default function PicturePoetApp() {
                         {imageKeywords && !isLoadingKeywords && (
                             <div className="mt-4 p-3 bg-secondary/50 rounded-md max-w-sm mx-auto">
                             <h4 className="font-semibold text-secondary-foreground mb-1">Identified Keywords:</h4>
-                            <p className="text-sm text-secondary-foreground break-words">{imageKeywords.join(', ')}</p>
+                            <p className="text-base text-secondary-foreground break-words">{imageKeywords.join(', ')}</p>
                             </div>
                         )}
                     </div>
@@ -296,42 +295,42 @@ export default function PicturePoetApp() {
                 {/* --- STEP 2: CUSTOMIZE & GENERATE --- */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-center gap-3">
-                        <div className={`flex-shrink-0 rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg ${uploadedImage && imageKeywords ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>2</div>
-                        <h3 className={`text-xl font-semibold ${!uploadedImage || !imageKeywords ? 'text-muted-foreground' : ''}`}>Customize & Generate</h3>
+                        <div className={`flex-shrink-0 rounded-full h-10 w-10 flex items-center justify-center font-bold text-xl ${uploadedImage && imageKeywords ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>2</div>
+                        <h3 className={`text-2xl font-semibold ${!uploadedImage || !imageKeywords ? 'text-muted-foreground' : ''}`}>Customize & Generate</h3>
                     </div>
 
                     <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${!uploadedImage || !imageKeywords ? 'opacity-50 pointer-events-none' : ''}`}>
                         <div className="space-y-4">
                              <div>
-                                <Label htmlFor="poem-length">Poem Length</Label>
+                                <Label htmlFor="poem-length" className="text-lg">Poem Length</Label>
                                 <Select
                                     value={poemStyle.length}
                                     onValueChange={(value) => setPoemStyle(prev => ({ ...prev, length: value }))}
                                     disabled={!uploadedImage || !imageKeywords}
                                 >
-                                    <SelectTrigger id="poem-length" className="w-full">
+                                    <SelectTrigger id="poem-length" className="w-full h-12 text-lg">
                                     <SelectValue placeholder="Select length" />
                                     </SelectTrigger>
                                     <SelectContent>
                                     {POEM_LENGTHS.map(opt => (
-                                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                        <SelectItem key={opt.value} value={opt.value} className="text-lg">{opt.label}</SelectItem>
                                     ))}
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div>
-                                <Label htmlFor="poem-tone">Poem Tone</Label>
+                                <Label htmlFor="poem-tone" className="text-lg">Poem Tone</Label>
                                 <Select
                                     value={poemStyle.tone}
                                     onValueChange={(value) => setPoemStyle(prev => ({ ...prev, tone: value }))}
                                     disabled={!uploadedImage || !imageKeywords}
                                 >
-                                    <SelectTrigger id="poem-tone" className="w-full">
+                                    <SelectTrigger id="poem-tone" className="w-full h-12 text-lg">
                                     <SelectValue placeholder="Select tone" />
                                     </SelectTrigger>
                                     <SelectContent>
                                     {POEM_TONES.map(opt => (
-                                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                        <SelectItem key={opt.value} value={opt.value} className="text-lg">{opt.label}</SelectItem>
                                     ))}
                                     </SelectContent>
                                 </Select>
@@ -339,26 +338,26 @@ export default function PicturePoetApp() {
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <Label htmlFor="custom-prompt">Additional Context (Optional)</Label>
+                                <Label htmlFor="custom-prompt" className="text-lg">Additional Context (Optional)</Label>
                                 <Textarea 
                                     id="custom-prompt"
                                     placeholder="e.g., Focus on the sunset, make it rhyme..."
                                     value={customPrompt}
                                     onChange={(e) => setCustomPrompt(e.target.value)}
-                                    className="min-h-[60px]"
+                                    className="min-h-[60px] text-lg"
                                     disabled={!uploadedImage || !imageKeywords}
                                 />
                             </div>
                              <Button 
                                 onClick={handleGeneratePoem} 
                                 disabled={isLoadingPoem || isLoadingKeywords || !imageKeywords}
-                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-lg"
                                 aria-label="Generate poem"
                             >
                                 {isLoadingPoem ? (
-                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                                 ) : (
-                                <Sparkles className="mr-2 h-5 w-5" />
+                                <Sparkles className="mr-2 h-6 w-6" />
                                 )}
                                 Generate Poem
                             </Button>
@@ -371,8 +370,8 @@ export default function PicturePoetApp() {
                 {/* --- STEP 3: CREATION OUTPUT --- */}
                  <div className="space-y-4">
                      <div className="flex items-center justify-center gap-3">
-                        <div className={`flex-shrink-0 rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg ${generatedPoem ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>3</div>
-                        <h3 className={`text-xl font-semibold ${!generatedPoem ? 'text-muted-foreground' : ''}`}>Your Creation</h3>
+                        <div className={`flex-shrink-0 rounded-full h-10 w-10 flex items-center justify-center font-bold text-xl ${generatedPoem ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>3</div>
+                        <h3 className={`text-2xl font-semibold ${!generatedPoem ? 'text-muted-foreground' : ''}`}>Your Creation</h3>
                     </div>
                     <div className="space-y-6">
                         {uploadedImage ? (
@@ -401,8 +400,8 @@ export default function PicturePoetApp() {
 
                         {generatedPoem && !isLoadingPoem && (
                         <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner text-center">
-                            <h3 className="font-semibold text-lg mb-2 font-lora text-primary">Generated Poem:</h3>
-                            <p className="font-poem whitespace-pre-wrap text-foreground text-sm md:text-base leading-relaxed">
+                            <h3 className="font-semibold text-xl mb-2 font-lora text-primary">Generated Poem:</h3>
+                            <p className="font-poem whitespace-pre-wrap text-foreground text-lg md:text-xl leading-relaxed">
                             {generatedPoem}
                             </p>
                         </div>
@@ -419,11 +418,11 @@ export default function PicturePoetApp() {
             </CardContent>
             {(uploadedImage || generatedPoem) && (
                 <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4 bg-muted/50 p-4 mt-6 rounded-b-lg border-t">
-                <Button onClick={handleSaveCreation} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Save creation">
+                <Button onClick={handleSaveCreation} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground h-12 text-lg" aria-label="Save creation">
                     <Save className="mr-2 h-5 w-5" /> Save Creation
                 </Button>
                 {generatedPoem && (
-                    <Button onClick={handleSharePoem} variant="outline" className="w-full sm:flex-1" aria-label="Share poem">
+                    <Button onClick={handleSharePoem} variant="outline" className="w-full sm:flex-1 h-12 text-lg" aria-label="Share poem">
                     <Share2 className="mr-2 h-5 w-5" /> Share Poem
                     </Button>
                 )}
@@ -432,8 +431,8 @@ export default function PicturePoetApp() {
         </Card>
       </main>
 
-      <footer className="mt-12 text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} Picture Poet. All rights reserved.</p>
+      <footer className="mt-12 text-center text-base text-muted-foreground">
+        <p>&copy; {new Date().getFullYear()} PicturePoet. All rights reserved.</p>
       </footer>
     </div>
   );
@@ -445,3 +444,5 @@ interface ShareData {
   text?: string;
   url?: string;
 }
+
+    
