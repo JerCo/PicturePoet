@@ -32,7 +32,11 @@ const prompt = ai.definePrompt({
   name: 'generatePoemFromKeywordsPrompt',
   input: {schema: GeneratePoemFromKeywordsInputSchema},
   output: {schema: GeneratePoemFromKeywordsOutputSchema},
-  prompt: `You are a poet. Based on the following keywords, generate a poem. Consider the user's requested style, if provided.
+  prompt: `You are a poet. Based on the following keywords, generate a poem.
+  
+When formatting the poem, ensure the line lengths are balanced for centered display. Avoid very short or very long lines next to each other.
+
+Consider the user's requested style, if provided.
 
 Keywords: {{{keywords}}}
 Style: {{{style}}}
@@ -70,3 +74,5 @@ const generatePoemFromKeywordsFlow = ai.defineFlow(
     throw new Error('Poem generation failed after multiple retries.');
   }
 );
+
+    

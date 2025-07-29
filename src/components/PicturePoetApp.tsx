@@ -233,9 +233,11 @@ export default function PicturePoetApp() {
 
   return (
     <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
-      <header className="w-full max-w-4xl flex items-center justify-between mb-8 md:mb-12 self-center">
+      <header className="w-full max-w-4xl flex flex-col items-center justify-center mb-8 md:mb-12 self-center">
+        <div className="mb-4">
+            <ThemeToggle />
+        </div>
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-primary font-lora">PicturePoet</h1>
-        <ThemeToggle />
       </header>
       
       {error && (
@@ -383,7 +385,7 @@ export default function PicturePoetApp() {
                             />
                         </div>
                         ) : (
-                        <div className="flex flex-col items-start justify-center text-muted-foreground p-6 border border-dashed rounded-lg h-48">
+                        <div className="flex flex-col items-center justify-center text-muted-foreground p-6 border border-dashed rounded-lg h-48">
                             <ImageIcon size={48} className="mb-4 opacity-50" />
                             <p>Upload a photo to see it here.</p>
                         </div>
@@ -398,15 +400,15 @@ export default function PicturePoetApp() {
 
                         {generatedPoem && !isLoadingPoem && (
                         <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner">
-                            <h3 className="font-semibold text-xl text-left mb-2 font-lora text-primary">Generated Poem:</h3>
-                            <p className="font-poem whitespace-pre-wrap text-foreground text-lg md:text-xl leading-relaxed text-left">
+                            <h3 className="font-semibold text-xl text-center mb-2 font-lora text-primary">Generated Poem:</h3>
+                            <p className="font-poem whitespace-pre-wrap text-foreground text-lg md:text-xl leading-relaxed text-center">
                             {generatedPoem}
                             </p>
                         </div>
                         )}
 
                         {!generatedPoem && !isLoadingPoem && (
-                        <div className="flex flex-col items-start justify-center text-muted-foreground p-6 border border-dashed rounded-lg">
+                        <div className="flex flex-col items-center justify-center text-muted-foreground p-6 border border-dashed rounded-lg">
                             <p>Your poem will appear here after generation.</p>
                         </div>
                         )}
@@ -429,7 +431,7 @@ export default function PicturePoetApp() {
         </Card>
       </main>
 
-      <footer className="mt-12 w-full max-w-4xl self-center text-base text-muted-foreground">
+      <footer className="mt-12 w-full max-w-4xl self-center text-base text-muted-foreground text-center">
         <p>&copy; {new Date().getFullYear()} PicturePoet. All rights reserved.</p>
       </footer>
     </div>
@@ -442,3 +444,5 @@ interface ShareData {
   text?: string;
   url?: string;
 }
+
+    
