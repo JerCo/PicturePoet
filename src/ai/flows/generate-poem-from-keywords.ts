@@ -47,7 +47,26 @@ const generatePoemFromKeywordsFlow = ai.defineFlow(
     outputSchema: GeneratePoemFromKeywordsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    const maxRetries = 3;
+    let baseDelay = 1000; // 1 second
+
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        const {output} = await prompt(input);
+        return output!;
+      } catch (e: any) {
+        // Check if the error is a 503 and if we have retries left
+        if (e.message && e.message.includes('[503') && i < maxRetries - 1) {
+          console.log(`Attempt ${i + 1} failed with 503 error. Retrying in ${baseDelay / 1000}s...`);
+          await new Promise(resolve => setTimeout(resolve, baseDelay));
+          baseDelay *= 2; // Exponential backoff
+        } else {
+          // If it's not a 503 or we've run out of retries, rethrow the error
+          throw e;
+        }
+      }
+    }
+    // This part should be unreachable if the loop completes, but typescript needs it.
+    throw new Error('Poem generation failed after multiple retries.');
   }
 );
