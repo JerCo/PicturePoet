@@ -167,7 +167,7 @@ export default function PicturePoetApp() {
       shareData.files = [imageFile];
     }
 
-    if (navigator.share) {
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share(shareData);
         toast({
