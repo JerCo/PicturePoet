@@ -399,9 +399,9 @@ export default function PicturePoetApp() {
                         )}
 
                         {generatedPoem && !isLoadingPoem && (
-                        <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner text-center">
-                            <h3 className="font-semibold text-xl mb-2 font-lora text-primary">Generated Poem:</h3>
-                            <p className="font-poem whitespace-pre-wrap text-foreground text-lg md:text-xl leading-relaxed">
+                        <div key={poemKey} className="poem-fade-in p-4 bg-card rounded-md border border-border shadow-inner">
+                            <h3 className="font-semibold text-xl text-center mb-2 font-lora text-primary">Generated Poem:</h3>
+                            <p className="font-poem whitespace-pre-wrap text-foreground text-lg md:text-xl leading-relaxed text-left">
                             {generatedPoem}
                             </p>
                         </div>
