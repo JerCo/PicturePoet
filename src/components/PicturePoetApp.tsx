@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { UploadCloud, SlidersHorizontal, Sparkles, Save, Loader2, AlertCircle, ImageIcon, FileText, Share2 } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 const POEM_LENGTHS = [
   { value: "short", label: "Short" },
@@ -232,11 +233,11 @@ export default function PicturePoetApp() {
 
   return (
     <div className="container mx-auto p-4 md:p-8 min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground">
-      <header className="mb-8 md:mb-12 text-center">
+      <header className="w-full max-w-4xl flex justify-between items-center mb-8 md:mb-12">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-lora">Picture Poet</h1>
-        <p className="text-muted-foreground text-md sm:text-lg mt-2">Transform your photos into beautiful poetry.</p>
+        <ThemeToggle />
       </header>
-
+      
       {error && (
         <Alert variant="destructive" className="mb-8 max-w-3xl w-full">
           <AlertCircle className="h-4 w-4" />
